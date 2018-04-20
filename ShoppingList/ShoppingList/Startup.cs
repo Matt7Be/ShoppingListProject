@@ -43,7 +43,7 @@ namespace ShoppingList
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=shopping}/{action=Index}/{id?}");
             });
         }
     }

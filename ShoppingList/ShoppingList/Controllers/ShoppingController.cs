@@ -41,8 +41,9 @@ namespace ShoppingList.Controllers
 
             if (ModelState.IsValid)
             {
-                db.Database.ExecuteSqlCommand($"Insert Into ShopItem (name, Quantity) " +
-                                            $"Values ('{shopItem.Name}', '{shopItem.Quantity}')");
+                db.ShopItem.Add(shopItem);
+                db.SaveChanges();
+
 
                 return RedirectToAction("index");
 
@@ -67,9 +68,7 @@ namespace ShoppingList.Controllers
             if (id != null)
             {
 
-                ShopItem shopItemToEdit = db.ShopItem
-                       .FromSql($"Select * from ShopItem where Id = {id}")
-                       .SingleOrDefault();
+                ShopItem shopItemToEdit = db.ShopItem.Where(s => s.Id == id).Select(s => s).SingleOrDefault();
 
                 if (shopItemToEdit != null)
                 {
@@ -88,9 +87,9 @@ namespace ShoppingList.Controllers
 
             if (ModelState.IsValid)
             {
-                db.Database.ExecuteSqlCommand($"Update ShopItem " +
-                                             $"Set Item = '{shopItem.Name}', Quantity = '{shopItem.Quantity}' " +
-                                              $"Where Id = {shopItem.Id} ");
+                db.ShopItem.Update(shopItem);
+                db.SaveChanges();
+
                 return RedirectToAction("Index");
 
             }
@@ -104,16 +103,14 @@ namespace ShoppingList.Controllers
 
             if (id != null)
             {
-                ShopItem shopItemToDelete = db.ShopItem
-                    .FromSql($"Select * from ShopItem where Id = {id}")
-                    .SingleOrDefault();
+                ShopItem shopItemToDelete = db.ShopItem.Where(s => s.Id == id).Select(s => s).SingleOrDefault();
 
 
                 if (shopItemToDelete != null)
                 {
-                    db.Database
-                     .ExecuteSqlCommand($"Delete From ShopItem " +
-                              $"Where Id = {id} ");
+                    db.ShopItem.Remove(shopItemToDelete);
+                    db.SaveChanges();
+
                 }
 
 
@@ -130,13 +127,35 @@ namespace ShoppingList.Controllers
         public ViewResult Find(string item, int? aantal)
         {
             return View("Index",
-                  db.ShopItem.FromSql(
-                      $"Select * from ShopItem " +
-                      $"where Name like '{item ?? "%"}%' "+
-                      $"and Quantity like {aantal ?? byte.MaxValue}")
+                  db.ShopItem
+                  .Where(s => s.Name.StartsWith(item ?? "") && s.Quantity <= (aantal ?? byte.MaxValue))
+                  .Select(s => s)
                   .ToList());
         }
 
+
+
+        //------------------------------------------- Details----------------------------------------//
+
+
+        [HttpGet]
+        public IActionResult Details(int? id)
+        {
+
+            if (id != null)
+            {
+
+                ShopItem shopItemToDetails = db.ShopItem.Where(s => s.Id == id).Select(s => s).SingleOrDefault();
+
+                if (shopItemToDetails != null)
+                {
+                    return View(shopItemToDetails);
+                }
+            }
+
+            return View("Error", new ErrorViewModel());
+
+        }
 
 
 
