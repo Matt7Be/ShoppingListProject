@@ -134,8 +134,8 @@ namespace ShoppingList.Controllers
             return View("Index",
                   db.ShopItem.FromSql(
                       $"Select * from ShopItem " +
-                      $"where item like '{item ?? "%"}%' " +
-                      $"and Quantity <= {aantal ?? byte.MaxValue}")
+                      $"where Name like '{item ?? "%"}%' "+
+                      $"and Quantity like {aantal ?? byte.MaxValue}")
                   .ToList());
         }
 
