@@ -21,9 +21,7 @@ namespace ShoppingList.Controllers
 
         public IActionResult Index()
         {
-            return View(db.ShopItem
-                               .FromSql($"Select * from ShopItem")
-                               .ToList());
+            return View(db.ShopItem.Select(s=>s).ToList());
 
         }
 
